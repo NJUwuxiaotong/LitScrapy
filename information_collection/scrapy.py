@@ -1,6 +1,6 @@
 import json
 import requests
-
+import time
 
 import bs4
 from bs4 import BeautifulSoup
@@ -99,10 +99,13 @@ def get_artile_urls_in_volume():
 
 
 
+start_t = time.monotonic()
+get_all_journal_names()
+end_t = time.monotonic()
+print(end_t - start_t)
 
-# get_all_journal_names()
-journal_urls = get_journal_urls_from_local_file()
-get_article_volume_urls_of_journals(journal_urls)
+#journal_urls = get_journal_urls_from_local_file()
+#get_article_volume_urls_of_journals(journal_urls)
 
 
 
