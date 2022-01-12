@@ -24,5 +24,5 @@ class Paper(Base):
     abstract = Column(String(2048))
 
     def __repr__(self):
-        return "<Journal(title='%s', journal_issn='%s', volume='%s', number='%s', start_page='%s', end_page='%s', year='%s', url='%s', doi='%s', key_words='%s', abstract='%s')>" % (self.title, self.journal_issn, self.volume, self.number, self.start_page, self.end_page, self.year, self.url, self.doi, self.key_words, self.abstract)
+        return "<Paper(title='%s', journal_issn='%s', volume='%s', number='%s', start_page='%s', end_page='%s', year='%s', url='%s', doi='%s', key_words='%s', abstract='%s')>" % (self.title, self.journal_issn, self.volume, self.number, self.start_page, self.end_page, self.year, self.url, self.doi, self.key_words, self.abstract)
 
