@@ -11,7 +11,7 @@ requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 from constants import constant as const
 from information_collection.http_engine import HEADER
-from information_collection.journal_volumes import Volume
+from table_mapping.journal_volumes import Volume
 
 
 def query_volumes_by_filter(conditions, limit_num=100):

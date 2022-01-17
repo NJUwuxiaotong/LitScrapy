@@ -6,16 +6,13 @@ from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String
 from databases.db_engine import engine, metadata
 
 
-table_paper_authors = Table(
-        'paper_authors', metadata,
-        Column('id', Integer, primary_key=True),
-        Column('paper_id', Integer, ),
+table_author_affilications = Table('author_affilications', metadata,
+        Column('id', Integer, primary_key=True)
         Column('author_id', Integer, ),
-        Column('order', Integer, ),
+        Column('affilication_id', Integer, ),
+        Column('start_year', Integer, ),
+        Column('end_year', Integer, ),
         )
 
 metadata.create_all(engine)
-
-
-
 

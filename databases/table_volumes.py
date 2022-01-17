@@ -6,7 +6,7 @@ from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String, 
 from databases.db_engine import engine, metadata
 
 
-journals = Table('volumes', metadata,
+table_volumes = Table('volumes', metadata,
                Column('id', Integer, primary_key=True),
                Column('issn', String(50), ),
                Column('volume', String(255), ),

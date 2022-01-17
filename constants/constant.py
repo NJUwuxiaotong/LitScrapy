@@ -33,12 +33,18 @@ VOLUME_UPDATED = "volume_is_updated"
 
 
 # paper information
-DOI_URL_PREFIX="https://doi.org/"
-DOI_URL_PREFIX_LEN=16
-PAPER_AUTHOR="paper_authors"
-PAPER_TITLE="paper_title"
-PAPER_DOI="paper_doi"
-PAPER_VOLUME="paper_volume"
-PAPER_NUMBER="paper_number"
-PAPER_DATE="paper_date"
+DOI_URL_PREFIX = "https://doi.org/"
+DOI_URL_PREFIX_LEN = 16
+PAPER_DBLP_ID = "paper_dblp_id"
+PAPER_AUTHOR = "paper_authors"
+PAPER_TITLE = "paper_title"
+PAPER_DOI = "paper_doi"
+PAPER_VOLUME = "paper_volume"
+PAPER_NUMBER = "paper_number"
+PAPER_DATE = "paper_date"
+PAPER_START_PAGE = "paper_start_page"
+PAPER_end_PAGE = "paper_end_page"
+PAPER_URL = "paper_url"
+PAPER_NA_VALUE = "-"
+
 

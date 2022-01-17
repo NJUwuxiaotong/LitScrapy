@@ -11,8 +11,8 @@ requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 from constants import constant as const
 from information_collection.http_engine import HEADER
-from information_collection.journal_info import Journal
-from information_collection.journal_volumes import Volume
+from table_mapping.journal_info import Journal
+from table_mapping.journal_volumes import Volume
 
 
 JOURNAL_URLS_FILE = "./journal_urls.json"
@@ -31,7 +31,8 @@ def get_journal_issn(soup):
 
 
 def insert_journal_into_db(journal_title, journal_addr, issn):
-    session.add(Journal(name=journal_title, dblp_address=journal_addr, issn=issn))
+    session.add(
+            Journal(name=journal_title, dblp_address=journal_addr, issn=issn))
     session.commit()
 
 
