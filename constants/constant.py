@@ -43,7 +43,7 @@ PAPER_VOLUME = "paper_volume"
 PAPER_NUMBER = "paper_number"
 PAPER_DATE = "paper_date"
 PAPER_START_PAGE = "paper_start_page"
-PAPER_end_PAGE = "paper_end_page"
+PAPER_END_PAGE = "paper_end_page"
 PAPER_URL = "paper_url"
 PAPER_NA_VALUE = "-"
 
