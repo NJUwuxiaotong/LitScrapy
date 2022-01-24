@@ -97,7 +97,7 @@ def analyze_papers_of_volume(url):
             paper_bibtex = get_paper_bibtex(paper_id)
             paper_authors = get_paper_authors(article_entry)
             paper_title = get_paper_title(article_entry)
-            paper_pages = const.paper_bibtex.get("pages")
+            paper_pages = paper_bibtex.get("pages")
             start_page, end_page = get_paper_start_end_pages(paper_pages) 
 
             info_of_papers.append({

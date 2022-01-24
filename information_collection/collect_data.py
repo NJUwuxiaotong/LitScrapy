@@ -8,8 +8,11 @@ from information_collection import analyze_journal_urls
 from information_collection import analyze_papers
 from information_collection import analyze_volumes
 
+from table_mapping.author_info import Author
 from table_mapping.journal_info import Journal
 from table_mapping.journal_volumes import Volume
+from table_mapping.paper_info import Paper
+from table_mapping.paper_author_mapping import PaperAuthor
 
 from publish_lib import generate_random
 
@@ -63,43 +66,55 @@ def collect_journal_papers():
         new_volumes = analyze_volumes.query_volumes_by_filter(
                 conditions, limit_num=10)
   
+
         for new_volume in new_volumes:
             volume_id = new_volume.id
             journal_issn = new_volume.issn
-            try:
-                new_papers = analyze_papers.analyze_papers_of_volume(
-                        new_volume.url)
-                
-                # analyze_papers.insert_papers_into_db(papers)
-                new_db_papers = list()
-                new_db_authors = list()
-                
-                for new_paper in new_papers:
-                    title = new_paper[const.PAPER_TITLE]
-                    journal_issn = new_volume.issn
-                    volume_id = new_volume.id
-                    volume = new_paper[const.PAPER_VOLUME]
-                    number = new_paper[const.PAPER_NUMBER] 
-                    year = new_paper[const.PAPER_DATE]
-                    url = new_paper[const.PAPER_URL]
-                    doi = new_paper[const.PAPER_DOI]
-                    start_page = new_paper[const.PAPER_START_PAGE] 
-                    end_page = new_paper[const.PAPER_END_PAGE] 
-
-                    
-
-
-                    # add authors
-                    authors = new_paper[const.PAPER_AUTHOR]
-                    
-                    author_title
-
-
-
-                    # analyze_volumes.set_updated_status_of_volumes(q.id)
             
-            except:
-                pass
+            new_papers = analyze_papers.analyze_papers_of_volume(
+                    new_volume.url)
+                
+            # analyze_papers.insert_papers_into_db(papers)
+            new_db_papers = list()
+            new_db_authors = list()
+                
+            for new_paper in new_papers:
+                new_db_papers.append(
+                        Paper(title=new_paper[const.PAPER_TITLE], 
+                            journal_issn=new_volume.issn, 
+                            volume_id=new_volume.id, 
+                            volume=new_paper[const.PAPER_VOLUME], 
+                            number=new_paper[const.PAPER_NUMBER],
+                            start_page=new_paper[const.PAPER_START_PAGE], 
+                            end_page=new_paper[const.PAPER_END_PAGE],                                 year=new_paper[const.PAPER_DATE], 
+                            url=new_paper[const.PAPER_URL], 
+                            doi=new_paper[const.PAPER_DOI]))
+                    
+                import pdb;pdb.set_trace()
+
+                # add authors
+                authors = new_paper[const.PAPER_AUTHOR]
+                for author in authors:
+                    author_title = author["author_title"]
+                    author_name = author["author_name"]
+                    author_dblp_url = author["author_dblp_url"]
+
+
+
+
+                # add papers
+                # session.adds()
+
+                # add authors
+                # session.adds()
+                
+                # update volume
+                #analyze_volumes.set_updated_status_of_volumes(q.id)
+
+                # session.commit()
+            #except:
+            #    print("Being processing volume [%s]" % volume_id)
+            #    exit(1)
 
 
 collect_journal_papers()
