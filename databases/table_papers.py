@@ -8,7 +8,7 @@ from databases.db_engine import engine, metadata
 
 table_papers = Table('papers', metadata,
                 Column('id', Integer, primary_key=True),
-                Column('tilte', String(255), ),
+                Column('title', String(255), ),
                 Column('journal_issn', String(50), ),
                 Column('volume_id', Integer, ),
                 Column('volume', String(50), ),
@@ -19,6 +19,8 @@ table_papers = Table('papers', metadata,
                 Column('url', String(255), ),
                 Column('doi', String(255), ),
                 )
+
+
 
 metadata.create_all(engine)
 

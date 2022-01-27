@@ -4,6 +4,8 @@ pymysql.install_as_MySQLdb()
 from sqlalchemy import Column, Integer, String, Boolean
 from sqlalchemy.ext.declarative import declarative_base
 
+from databases.db_engine import engine
+
 
 Base = declarative_base()
 
@@ -24,4 +26,6 @@ class Paper(Base):
 
     def __repr__(self):
         return "<Paper(title='%s', journal_issn='%s', volumn_id='%s', volume='%s', number='%s', start_page='%s', end_page='%s', year='%s', url='%s', doi='%s')>" % (self.title, self.journal_issn, self.volume_id, self.volume, self.number, self.start_page, self.end_page, self.year, self.url, self.doi)
+
+
 
