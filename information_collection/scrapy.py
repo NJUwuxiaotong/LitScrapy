@@ -89,7 +89,8 @@ def get_article_volume_urls_of_journals(journal_urls):
                     elif type(c_child) == bs4.element.Tag:
                         volume_url = c_child.a["href"]    
                         volume_info = c_child.a.string
-                        article_volumes[journal_title][volume_info] = volume_url
+                        article_volumes[journal_title][volume_info] = \
+                            volume_url
 
 
 def get_artile_urls_in_volume():
@@ -104,12 +105,5 @@ get_all_journal_names()
 end_t = time.monotonic()
 print(end_t - start_t)
 
-#journal_urls = get_journal_urls_from_local_file()
-#get_article_volume_urls_of_journals(journal_urls)
-
-
-
-
-
-
-
+# journal_urls = get_journal_urls_from_local_file()
+# get_article_volume_urls_of_journals(journal_urls)

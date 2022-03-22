@@ -55,4 +55,3 @@ def get_journal_urls_from_local_file():
     except FileNotFoundError:
         print("File [%s] does not exist!" % JOURNAL_URLS_FILE)
         exit(1)
-

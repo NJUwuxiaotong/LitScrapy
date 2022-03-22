@@ -16,5 +16,6 @@ class Affilication(Base):
     country = Column(String(50))
 
     def __repr__(self):
-        return "<Affilication(department='%s', city='%s', country='%s')>" % (self.department, self.city, self.country)
+        return "<Affilication(department='%s', city='%s', country='%s')>" % \
+               (self.department, self.city, self.country)
 

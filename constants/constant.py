@@ -1,3 +1,9 @@
+# commands
+CMD_COLLECT_JOURNAL = "collect journal"
+CMD_COLLECT_VOLUME = "collect volume"
+CMD_COLLECT_PAPER = "collect paper"
+
+
 # dblp
 DBLP_PREFIX = "dblp: "
 DBLP_JOURNAL_NUM_PER_PAGE = 100
@@ -46,5 +52,3 @@ PAPER_START_PAGE = "paper_start_page"
 PAPER_END_PAGE = "paper_end_page"
 PAPER_URL = "paper_url"
 PAPER_NA_VALUE = "-"
-
-

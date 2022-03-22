@@ -16,6 +16,5 @@ class PaperAuthor(Base):
     order = Column(Integer)
 
     def __repr__(self):
-        return "<PaperAuthor(paper_id='%s', author_id='%s', order='%s')>" % (self.paper_id, self.author_id, self.order)
-
-
+        return "<PaperAuthor(paper_id='%s', author_id='%s', order='%s')>" % \
+               (self.paper_id, self.author_id, self.order)

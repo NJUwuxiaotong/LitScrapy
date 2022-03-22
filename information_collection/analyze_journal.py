@@ -46,7 +46,8 @@ def get_paper_volumes_of_journal(soup, journal_url):
     for child in body_main.children:
         if child.name == "ul":
             for c_child in child.children:
-                if type(c_child) == bs4.element.NavigableString:                    pass
+                if type(c_child) == bs4.element.NavigableString:
+                    pass
                 elif type(c_child) == bs4.element.Tag:
                     volumes = c_child.find_all("a")
                     for volume in volumes:
@@ -102,6 +103,3 @@ def get_all_journals_from_db():
 
 def find_volume_by_url(volume_url):
     return session.query(Volume).filter(Volume.url == volume_url).first()
-
-
-

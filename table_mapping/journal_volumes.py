@@ -18,6 +18,6 @@ class Volume(Base):
     is_updated = Column(Boolean)
 
     def __repr__(self):
-        return "<Volume(issn='%s', volume='%s', year='%s', url='%s', is_updated='%s')>" % (self.issn, self.volume, self.year, self.url, self.is_updated)
-
-
+        return "<Volume(issn='%s', volume='%s', year='%s', url='%s', " \
+               "is_updated='%s')>" % \
+               (self.issn, self.volume, self.year, self.url, self.is_updated)

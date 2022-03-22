@@ -23,9 +23,12 @@ class Paper(Base):
     year = Column(Integer)
     url = Column(String(255))
     doi = Column(String(255))
+    dblp_id = Column(String(255))
 
     def __repr__(self):
-        return "<Paper(title='%s', journal_issn='%s', volumn_id='%s', volume='%s', number='%s', start_page='%s', end_page='%s', year='%s', url='%s', doi='%s')>" % (self.title, self.journal_issn, self.volume_id, self.volume, self.number, self.start_page, self.end_page, self.year, self.url, self.doi)
-
-
-
+        return "<Paper(title='%s', journal_issn='%s', volumn_id='%s', " \
+               "volume='%s', number='%s', start_page='%s', end_page='%s', " \
+               "year='%s', url='%s', doi='%s', dblp_id='%s')>" % \
+               (self.title, self.journal_issn, self.volume_id, self.volume,
+                self.number, self.start_page, self.end_page, self.year,
+                self.url, self.doi, self.dblp_id)

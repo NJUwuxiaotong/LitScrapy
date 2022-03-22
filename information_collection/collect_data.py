@@ -4,6 +4,8 @@ from constants import constant as const
 
 from databases.db_engine import engine, session
 
+from sqlalchemy import distinct
+
 from information_collection import analyze_journal
 from information_collection import analyze_journal_urls
 from information_collection import analyze_papers
@@ -24,7 +26,6 @@ except_journals = ["https://dblp.uni-trier.de/db/journals/iacr/"]
 def collect_journals():
     analyze_journal_urls.get_all_journal_urls()
     journal_urls = analyze_journal_urls.get_journal_urls_from_local_file()
-    print(journal_urls)
     for journal_url in journal_urls:
         soup = analyze_journal.get_journal_http_body(journal_url)
         journal_title = analyze_journal.get_journal_title(soup)
@@ -47,6 +48,9 @@ def collect_journal_volumes():
         journal_dblp_addr = journal.dblp_address
         new_journal_volumes = list()
 
+        if analyze_volumes.query_journal_is_in_volumes(journal_issn):
+            continue
+
         soup = analyze_journal.get_journal_http_body(journal_dblp_addr)
         volumes = analyze_journal.get_paper_volumes_of_journal(
                 soup, journal_dblp_addr)
@@ -63,56 +67,83 @@ def collect_journal_volumes():
 
 def collect_journal_papers():
     while True:
-        conditions = (Volume.is_updated==False)
+        conditions = (Volume.is_updated == False)
         new_volumes = analyze_volumes.query_volumes_by_filter(
-                conditions, limit_num=1)
+                conditions)                           #, limit_num=5)
 
+        new_volume_infos = list()
         for new_volume in new_volumes:
+             new_volume_infos.append(
+                 {const.VOLUME_ID: new_volume.id,
+                  const.JOURNAL_ISSN: new_volume.issn,
+                  const.VOLUME_URL: new_volume.url})
 
-            volume_id = new_volume.id
-            
-            print("VOLUME ID: %s" % volume_id)
-            journal_issn = new_volume.issn
-            
-            new_papers = analyze_papers.analyze_papers_of_volume(
-                    new_volume.url)
+        if not new_volume_infos:
+            print("Finish the update!")
+            break
 
-            for new_paper in new_papers:
-                paper_query = session.query(Paper).filter(Paper.url==new_paper[const.PAPER_URL]).first()
+        for new_volume_info in new_volume_infos:
 
-                if paper_query:
-                    print("Database has the record [%s]" % paper_query.url)
+            print("%s" % new_volume_info[const.VOLUME_URL])
+            print("VOLUME ID: %s" % new_volume_info[const.VOLUME_ID])
+
+            # if new_volume_info[const.VOLUME_ID] in [35956, 35957, 44428,
+            #                                        44429, 44430]:
+            #    continue
+
+            new_paper_infos = analyze_papers.analyze_papers_of_volume(
+                    new_volume_info[const.VOLUME_URL])
+
+            for new_paper_info in new_paper_infos:
+                paper_query = \
+                    session.query(Paper).filter(
+                        Paper.dblp_id == new_paper_info[const.PAPER_DBLP_ID])\
+                        .first()
+
+                if paper_query is not None:
+                    print("Database has the record [dblp_id: %s]" %
+                          paper_query.dblp_id)
                     continue
+                else:
+                    print("Database has no record [dblp_id: %s]" %
+                          new_paper_info[const.PAPER_DBLP_ID])
 
-                session.add(
-                        Paper(title=new_paper[const.PAPER_TITLE],
-                            journal_issn=new_volume.issn, 
-                            volume_id=new_volume.id, 
-                            volume=new_paper[const.PAPER_VOLUME], 
-                            number=new_paper[const.PAPER_NUMBER],
-                            start_page=new_paper[const.PAPER_START_PAGE], 
-                            end_page=new_paper[const.PAPER_END_PAGE], 
-                            year=new_paper[const.PAPER_DATE], 
-                            url=new_paper[const.PAPER_URL], 
-                            doi=new_paper[const.PAPER_DOI]))
-                new_paper_id = session.flush()
-
-                print("^_^")
-                import pdb; pdb.set_trace()
+                new_paper = Paper(
+                    title=new_paper_info[const.PAPER_TITLE],
+                    journal_issn=new_volume_info[const.JOURNAL_ISSN],
+                    volume_id=new_volume_info[const.VOLUME_ID],
+                    volume=new_paper_info[const.PAPER_VOLUME],
+                    number=new_paper_info[const.PAPER_NUMBER],
+                    start_page=new_paper_info[const.PAPER_START_PAGE],
+                    end_page=new_paper_info[const.PAPER_END_PAGE],
+                    year=new_paper_info[const.PAPER_DATE],
+                    url=new_paper_info[const.PAPER_URL],
+                    doi=new_paper_info[const.PAPER_DOI],
+                    dblp_id=new_paper_info[const.PAPER_DBLP_ID])
+                session.add(new_paper)
+                session.flush()
+                session.refresh(new_paper)
+                new_paper_id = new_paper.id
 
                 # add authors
-                authors = new_paper[const.PAPER_AUTHOR]
+                author_infos = new_paper_info[const.PAPER_AUTHOR]
                 order = 1
-                for author in authors:
-                    author_query = session.query(Author).filter(Author.title == author["author_title"]).first()
+                for author_info in author_infos:
+                    author_query = \
+                        session.query(Author).filter(
+                            Author.title == author_info["author_title"]).first()
                     if author_query:
                         author_id = author_query.id
                     else:
-                        session.add(Author(
-                            title=author["author_title"], 
-                            name=author["author_name"], 
-                            dblp_url=author["author_dblp_url"]))
-                        author_id = session.flush()
+                        new_author = Author(
+                            title=author_info["author_title"],
+                            name=author_info["author_name"],
+                            dblp_url=author_info["author_dblp_url"])
+
+                        session.add(new_author)
+                        session.flush()
+                        session.refresh(new_author)
+                        author_id = new_author.id
                
                     session.add(PaperAuthor(
                         paper_id=new_paper_id, 
@@ -120,16 +151,26 @@ def collect_journal_papers():
                         order=order))
                     order += 1
                 session.commit()
-            #except:
-            #    print("Being processing volume [%s]" % volume_id)
-            #    exit(1)
 
-            volume = session.query(Volume).filter(Volume.id == volume_id).first()
+            volume = \
+                session.query(Volume).filter(
+                    Volume.id == new_volume_info[const.VOLUME_ID]).first()
             volume.is_updated = True
             session.commit()
-            print("Paper [%s] Volume - [%s] has been processed!" % 
-                    (journal_issn, volume_id))
+            print("Volume - [ID: %s] has been processed!" %
+                  new_volume_info[const.VOLUME_ID])
+
+
+def update_is_updated_of_volumes():
+    paper_volume_ids = session.query(distinct(Paper.volume_id))
+    volume_ids = session.query(Volume.id).filter(Volume.id.notin_(paper_volume_ids)).all()
+
+    for volume_id in volume_ids:
+        session.query(Volume).filter(Volume.id == volume_id[0]).update(
+            {Volume.is_updated: False})
+
+    session.commit()
+    session.close()
 
 
 collect_journal_papers()
-

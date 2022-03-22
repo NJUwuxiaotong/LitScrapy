@@ -28,14 +28,15 @@ def get_paper_volumes_of_journal(soup, journal_url):
     for child in body_main.children:
         if child.name == "ul":
             for c_child in child.children:
-                if type(c_child) == bs4.element.NavigableString:                    pass
+                if type(c_child) == bs4.element.NavigableString:
+                    pass
                 elif type(c_child) == bs4.element.Tag:
                     volumes = c_child.find_all("a")
                     for volume in volumes:
                         volume_url = volume["href"]
                         volume_info = volume.string
                         if "volume" in volume_info.lower():
-                            volume_number, volume_year =  volume_info.split(":")
+                            volume_number, volume_year = volume_info.split(":")
                             volume_number = volume_number[7:].strip()
                             volume_year = volume_year.strip()
                         else:

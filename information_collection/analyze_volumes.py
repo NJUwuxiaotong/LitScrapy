@@ -31,8 +31,15 @@ def query_volumes():
     #return updated_volumes
 
 
+def query_journal_is_in_volumes(journal_issn):
+    result = session.query(Volume).filter(Volume.issn == journal_issn).first()
+    if result:
+        return True
+    else:
+        return False
+
+
 def set_updated_status_of_volumes(volume_id):
     volume = session.query(Volume).filter(Volume.id == volume_id).first()
     volume.is_updated = True
     session.commit()
-

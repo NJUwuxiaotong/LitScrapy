@@ -19,7 +19,11 @@ from table_mapping.paper_info import Paper
 
 
 def get_paper_bibtex(paper_id):
-    paper_bibtex_url = const.DBLP_JOURNAL_BIBTEX_PREVIX + paper_id + const.DBLP_JOURNAL_BIBTEX_SUFFIX
+    return dict()
+
+    paper_bibtex_url = \
+        const.DBLP_JOURNAL_BIBTEX_PREVIX + paper_id + \
+        const.DBLP_JOURNAL_BIBTEX_SUFFIX
     req = requests.get(paper_bibtex_url, headers=HEADER)
     txt = req.text
     soup = BeautifulSoup(txt, features="lxml")
@@ -65,6 +69,7 @@ def get_paper_doi(paper_info):
     doi_url = paper_info.find("li", {"class": "ee"}).a["href"]
     return doi_url[const.DOI_URL_PREFIX_LEN:]
 
+
 def get_paper_start_end_pages(paper_page):
     try:
         pages = paper_page.split("--")
@@ -81,12 +86,17 @@ def analyze_papers_of_volume(url):
     soup = BeautifulSoup(txt, features="lxml")
     sibling = soup.body.find("ul", class_="publ-list")
 
+    # import pdb; pdb.set_trace()
+
     if sibling is None:
         return info_of_papers
     
     # sibling = body_main.find_previous_sibling()
+    paper_num = 0
     while sibling:
-        article_entries = sibling.find_all("li", {"class": "entry article"})    
+        # item_name = "entry article"
+        item_name = "entry informal"
+        article_entries = sibling.find_all("li", {"class": item_name})
         if not len(article_entries):
             sibling = sibling.find_next_sibling()
             continue
@@ -96,7 +106,16 @@ def analyze_papers_of_volume(url):
 
             paper_bibtex = get_paper_bibtex(paper_id)
             paper_authors = get_paper_authors(article_entry)
-            paper_title = get_paper_title(article_entry)
+            #paper_title = get_paper_title(article_entry)
+
+            paper_title = paper_bibtex.get("title")
+
+            if paper_title is None:
+                paper_title = ""
+
+            if len(paper_title) > 255:
+                paper_title = paper_title[:255]
+
             paper_pages = paper_bibtex.get("pages")
             start_page, end_page = get_paper_start_end_pages(paper_pages) 
 
@@ -111,16 +130,18 @@ def analyze_papers_of_volume(url):
                 const.PAPER_START_PAGE: start_page,
                 const.PAPER_END_PAGE: end_page,
                 const.PAPER_URL: paper_bibtex.get("url")})
-    
+
+            paper_num += 1
+            if paper_num % 100 == 0:
+                print("The number of papers from web [%s] is %s" %
+                      (paper_num, url))
+
         sibling = sibling.find_next_sibling()
+
+    print("The total number of papers from web [%s] is %s" % (paper_num, url))
     return info_of_papers
 
 
-def insert_paper_into_db(paper_info):
-    papers = list()
-    for paper_info in papers_info:
-        # papers.append(Paper(title=, journal_issn=, ))
-        pass
-    session.adds(papers)
-    session.commit()
-
+# volume_url = "https://dblp.uni-trier.de/db/journals/tinytocs/tinytocs1.html"
+# info_of_papers = analyze_papers_of_volume(volume_url)
+# print(info_of_papers)

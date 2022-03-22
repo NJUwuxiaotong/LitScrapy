@@ -17,5 +17,6 @@ class Journal(Base):
     press = Column(String(50))
 
     def __repr__(self):
-        return "<Journal(name='%s', dblp_address='%s', issn='%s', press='%s')>" % (self.name, self.dblp, self.isbn, self.press)
-
+        return "<Journal(name='%s', dblp_address='%s', " \
+               "issn='%s', press='%s')>" % \
+               (self.name, self.dblp, self.isbn, self.press)

@@ -16,4 +16,5 @@ class Author(Base):
     dblp_url = Column(String(200))
 
     def __repr__(self):
-        return "<Author(title='%s', name='%s', dblp_url='%s')>" % (self.title, self.name, self.dblp_url)
+        return "<Author(title='%s', name='%s', dblp_url='%s')>" % \
+               (self.title, self.name, self.dblp_url)
