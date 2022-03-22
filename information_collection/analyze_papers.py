@@ -88,15 +88,20 @@ def analyze_papers_of_volume(url):
 
     # import pdb; pdb.set_trace()
 
+    # import pdb; pdb.set_trace()
+
     if sibling is None:
         return info_of_papers
     
     # sibling = body_main.find_previous_sibling()
     paper_num = 0
     while sibling:
-        # item_name = "entry article"
-        item_name = "entry informal"
-        article_entries = sibling.find_all("li", {"class": item_name})
+        item_name = "entry article"
+        # item_name = "entry informal"
+        # item_name = "entry book"
+        item_name = "entry data"
+        article_entries = sibling.find_all(
+            "li", {"class": ["entry data", "entry article"]})
         if not len(article_entries):
             sibling = sibling.find_next_sibling()
             continue
@@ -142,6 +147,7 @@ def analyze_papers_of_volume(url):
     return info_of_papers
 
 
-# volume_url = "https://dblp.uni-trier.de/db/journals/tinytocs/tinytocs1.html"
-# info_of_papers = analyze_papers_of_volume(volume_url)
-# print(info_of_papers)
+#volume_url = "https://dblp.uni-trier.de/db/journals/afp/afp2022.html"
+##info_of_papers = analyze_papers_of_volume(volume_url)
+#print(len(info_of_papers))
+#print(info_of_papers)

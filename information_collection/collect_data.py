@@ -66,8 +66,17 @@ def collect_journal_volumes():
 
 
 def collect_journal_papers():
-    while True:
-        conditions = (Volume.is_updated == False)
+
+    arx_journal_issn = "2331-8422"
+
+#    while True:
+    # conditions = (Volume.is_updated == False)
+
+    volume_id = 46770
+
+    while volume_id <= 46770:
+
+        conditions = (Volume.id == volume_id)
         new_volumes = analyze_volumes.query_volumes_by_filter(
                 conditions)                           #, limit_num=5)
 
@@ -78,11 +87,14 @@ def collect_journal_papers():
                   const.JOURNAL_ISSN: new_volume.issn,
                   const.VOLUME_URL: new_volume.url})
 
-        if not new_volume_infos:
-            print("Finish the update!")
-            break
+     #   if not new_volume_infos:
+     #       print("Finish the update!")
+     #       break
 
         for new_volume_info in new_volume_infos:
+
+            if new_volume_info[const.JOURNAL_ISSN] == arx_journal_issn:
+                continue
 
             print("%s" % new_volume_info[const.VOLUME_URL])
             print("VOLUME ID: %s" % new_volume_info[const.VOLUME_ID])
@@ -144,10 +156,10 @@ def collect_journal_papers():
                         session.flush()
                         session.refresh(new_author)
                         author_id = new_author.id
-               
+
                     session.add(PaperAuthor(
-                        paper_id=new_paper_id, 
-                        author_id=author_id, 
+                        paper_id=new_paper_id,
+                        author_id=author_id,
                         order=order))
                     order += 1
                 session.commit()
@@ -159,6 +171,8 @@ def collect_journal_papers():
             session.commit()
             print("Volume - [ID: %s] has been processed!" %
                   new_volume_info[const.VOLUME_ID])
+
+        volume_id = volume_id + 1
 
 
 def update_is_updated_of_volumes():

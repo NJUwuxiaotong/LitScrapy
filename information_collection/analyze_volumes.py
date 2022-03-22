@@ -14,7 +14,7 @@ from information_collection.http_engine import HEADER
 from table_mapping.journal_volumes import Volume
 
 
-def query_volumes_by_filter(conditions, limit_num=100):
+def query_volumes_by_filter(conditions, limit_num=1000):
     query = session.query(Volume).filter(conditions).limit(limit_num)
     return query
 
