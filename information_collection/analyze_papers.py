@@ -86,10 +86,6 @@ def analyze_papers_of_volume(url):
     soup = BeautifulSoup(txt, features="lxml")
     sibling = soup.body.find("ul", class_="publ-list")
 
-    # import pdb; pdb.set_trace()
-
-    # import pdb; pdb.set_trace()
-
     if sibling is None:
         return info_of_papers
     

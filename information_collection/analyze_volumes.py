@@ -12,6 +12,7 @@ requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 from constants import constant as const
 from information_collection.http_engine import HEADER
 from table_mapping.journal_volumes import Volume
+from table_mapping.paper_info import Paper
 
 
 def query_volumes_by_filter(conditions, limit_num=1000):
@@ -43,3 +44,12 @@ def set_updated_status_of_volumes(volume_id):
     volume = session.query(Volume).filter(Volume.id == volume_id).first()
     volume.is_updated = True
     session.commit()
+
+
+def update_year_f_volumes():
+    v_query = session.query(Volume)
+    for volume in v_query:
+        volume_id = volume.id
+        p_query = session.query(Paper)\
+            .filter(Paper.volume_id == volume_id).first()
+        pape

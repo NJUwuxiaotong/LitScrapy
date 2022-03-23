@@ -13,6 +13,7 @@ from constants import constant as const
 from information_collection.http_engine import HEADER
 from table_mapping.journal_info import Journal
 from table_mapping.journal_volumes import Volume
+from table_mapping.press_info import Press
 
 
 JOURNAL_URLS_FILE = "./journal_urls.json"
@@ -103,3 +104,66 @@ def get_all_journals_from_db():
 
 def find_volume_by_url(volume_url):
     return session.query(Volume).filter(Volume.url == volume_url).first()
+
+
+def get_presses():
+    press_url = "https://dblp.uni-trier.de/db/journals/publ/index.html"
+    req = requests.get(press_url, headers=HEADER)
+    txt = req.text
+    soup = BeautifulSoup(txt, features="lxml")
+    press_soup = soup.find("div", "clear-both")
+    press_soup = press_soup.find_next_sibling()
+    press_list = press_soup.find_all("li")
+
+    presses = dict()
+    for press in press_list:
+        press_name = press.a.string
+        press_url = press.a["href"]
+        presses[press_name] = press_url
+        session.add(Press(name=press_name, url=press_url))
+
+    session.commit()
+    session.close()
+
+
+def find_press_of_journal():
+    presses = session.query(Press)
+    for press in presses:
+        press_id = press.id
+        press_url = press.url
+
+        req = requests.get(press_url, headers=HEADER)
+        txt = req.text
+        soup = BeautifulSoup(txt, features="lxml")
+        press_soup = soup.find("div", "clear-both")
+        press_soup = press_soup.find_next_sibling()
+        press_soup = press_soup.find_next_sibling()
+        p_infos = press_soup.find_all("li")
+
+        while p_infos:
+            for p_info in p_infos:
+                journal_url = p_info.a["href"]
+                if const.DBLP_JOURNAL_PREVIX in journal_url:
+                    journal_url = journal_url[:-10]
+                    j_q = session.query(Journal)\
+                        .filter(Journal.dblp_address == journal_url).first()
+                    if j_q:
+                        j_q.press = press_id
+                        session.commit()
+
+            press_soup = press_soup.find_next_sibling()
+            p_infos = press_soup.find_all("li")
+    session.close()
+
+
+def check_journal_press(journal_url):
+    journal_query = session.query(Journal)\
+        .filter(Journal.dblp_address == journal_url).first()
+
+    if journal_query:
+        return True
+    else:
+        return False
+
+
+find_press_of_journal()

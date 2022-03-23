@@ -10,6 +10,6 @@ table_journals = Table('journals', metadata,
                        Column('name', String(255), ),
                        Column('dblp_address', String(255), ),
                        Column('issn', String(50), ),
-                       Column('press', String(50), ),)
+                       Column('press', Integer, ),)
 
 metadata.create_all(engine)
