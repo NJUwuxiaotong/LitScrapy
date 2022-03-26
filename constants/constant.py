@@ -12,7 +12,7 @@ DBLP_SOURCE_URL = "https://dblp.uni-trier.de/db/journals/index.html"
 
 
 # dblp bibtex 
-DBLP_JOURNAL_BIBTEX_PREVIX = "https://dblp.org/rec/"
+DBLP_JOURNAL_BIBTEX_PREVIX = "https://dblp.uni-trier.de/rec/"
 DBLP_JOURNAL_BIBTEX_SUFFIX = ".html?view=bibtex"
 
 

@@ -8,6 +8,8 @@ import requests
 import bs4
 from bs4 import BeautifulSoup
 
+from sqlalchemy import distinct
+
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
@@ -15,6 +17,7 @@ from databases.db_engine import engine, session
 from constants import constant as const
 from information_collection.http_engine import HEADER
 # from information_collection.journal_volumes import Volume
+from table_mapping.journal_volumes import Volume
 from table_mapping.paper_info import Paper
 
 
@@ -142,6 +145,73 @@ def analyze_papers_of_volume(url):
     print("The total number of papers from web [%s] is %s" % (paper_num, url))
     return info_of_papers
 
+
+def get_volumes_of_None():
+    volume_ids = session.query(distinct(Paper.volume_id))\
+        .filter(Paper.dblp_id == None)
+
+    v_ids = list()
+    for volume_id in volume_ids:
+        v_ids.append(volume_id[0])
+    return v_ids
+
+
+def update_dblp_id_of_papers():
+    volume_ids = get_volumes_of_None()
+    for volume_id in volume_ids:
+        volume = session.query(Volume).filter(Volume.id == volume_id).first()
+        if not volume:
+            continue
+
+        req = requests.get(volume.url, headers=HEADER)
+        txt = req.text
+        soup = BeautifulSoup(txt, features="lxml")
+        sibling = soup.body.find("ul", class_="publ-list")
+
+        if sibling is None:
+            return info_of_papers
+
+        # sibling = body_main.find_previous_sibling()
+        while sibling:
+            # item_name = "entry informal"
+            # item_name = "entry book"
+            article_entries = sibling.find_all(
+                "li", {"class": ["entry data", "entry article"]})
+            if not len(article_entries):
+                sibling = sibling.find_next_sibling()
+                continue
+
+            for article_entry in article_entries:
+                paper_id = article_entry["id"]
+
+                paper_doi = get_paper_doi(article_entry)
+
+                #paper_title = get_paper_title(article_entry)
+                #if paper_title is None:
+                #    paper_title = ""
+
+                #if len(paper_title) > 255:
+                #    paper_title = paper_title[:255]
+
+                #if not paper_title:
+                #    continue
+
+                paper_info = session.query(Paper)\
+                    .filter(Paper.doi == paper_doi).first()
+
+                if not paper_info:
+                    continue
+
+                paper_dblp_id = paper_info.dblp_id
+
+                if not paper_dblp_id:
+                    paper_info.dblp_id = paper_id
+                    session.commit()
+
+            sibling = sibling.find_next_sibling()
+
+
+update_dblp_id_of_papers()
 
 #volume_url = "https://dblp.uni-trier.de/db/journals/afp/afp2022.html"
 ##info_of_papers = analyze_papers_of_volume(volume_url)
