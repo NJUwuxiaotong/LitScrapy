@@ -7,7 +7,7 @@ from databases.db_engine import engine, metadata
 
 
 table_author_affilications = Table('author_affilications', metadata,
-        Column('id', Integer, primary_key=True)
+        Column('id', Integer, primary_key=True),
         Column('author_id', Integer, ),
         Column('affilication_id', Integer, ),
         Column('start_year', Integer, ),

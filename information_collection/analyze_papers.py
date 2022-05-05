@@ -22,8 +22,6 @@ from table_mapping.paper_info import Paper
 
 
 def get_paper_bibtex(paper_id):
-    return dict()
-
     paper_bibtex_url = \
         const.DBLP_JOURNAL_BIBTEX_PREVIX + paper_id + \
         const.DBLP_JOURNAL_BIBTEX_SUFFIX
